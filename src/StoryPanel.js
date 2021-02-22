@@ -100,7 +100,7 @@ class StoryParagraph extends Component {
       //determine if the current paragraph should be highlighted. It should be highlighted if its beginning is visible on the main area of the page, OR, if the beginning is not visible, the bottom part of the paragraph
       //is still the main object in the current view, which applies to long paragraphs.
       //the border case of very very short paragraphs is prevented by adding an extra empty margin to the bottom of each paragraph, this could be a TODO to refine later if this is in any manner bad for the application.
-      if ((topOffset > 80 && topOffset < this.props.height && bottomOffset > this.props.height/4) || (topOffset < 80 && bottomOffset > this.props.height/2) ) {
+      if ((topOffset > 80 && topOffset < this.props.height*2/3 && bottomOffset > this.props.height/4) || (topOffset < 80 && bottomOffset > this.props.height/2) ) {
         //if this paragraph has anactionFilter to it, apply it!
         if (!this.state.highlighted) {
           if(this.props.animation === true && !this.m_firedAction) {

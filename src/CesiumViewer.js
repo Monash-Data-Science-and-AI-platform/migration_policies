@@ -1,7 +1,7 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Viewer, Entity, PolygonGraphics, LabelGraphics, EntityDescription, CameraFlyTo, ScreenSpaceEventHandler, ScreenSpaceEvent } from 'resium';
-import { Cartesian3, PolygonHierarchy, ScreenSpaceEventType } from 'cesium';
-import * as helper from './Helper.js'
+import { Viewer, Entity, PolygonGraphics, EntityDescription, CameraFlyTo } from 'resium';
+import { Cartesian3, PolygonHierarchy, Color } from 'cesium';
+
 //import countries from "./data/countries_min.geojson"
 export default class CesiumViewer extends PureComponent {
     constructor(props) {
@@ -37,20 +37,30 @@ export default class CesiumViewer extends PureComponent {
             let coords = feature.geometry.coordinates
             let name = feature.properties.admin
             let geometry
-            //console.log(name)
+            console.log(name)
             if (feature.geometry.type === "Polygon") {
                 let flatcoords = coords[0].flat()
 
                 geometry = new PolygonHierarchy(Cartesian3.fromDegreesArray(flatcoords))
-                entities.push({ country: name, name: name, geometry: geometry, properties: feature.properties, popupText: this.getPolicyText(feature.properties.migrationpolicies) })
+                if (feature.properties.migrationpolicies) {
+
+                    entities.push({ country: name, name: name, geometry: geometry, properties: feature.properties })
+
+                }
                 // geometry = PolygonGeometry.createGeometry(hierarchy)
             } else {
                 geometry = []
                 let flatcoords
                 for (let j = 0; j < coords.length; j++) {
+
                     flatcoords = coords[j][0].flat()
                     geometry = new PolygonHierarchy(Cartesian3.fromDegreesArray(flatcoords))
-                    entities.push({ country: name, name: name + j, geometry: geometry, properties: feature.properties, popupText: this.getPolicyText(feature.properties.migrationpolicies) })
+                    if (feature.properties.migrationpolicies) {
+
+                        entities.push({ country: name, name: name + j, geometry: geometry, properties: feature.properties })
+
+                    }
+                    //  entities.push({ country: name, name: name + j, geometry: geometry, properties: feature.properties, popupText: this.getPolicyText(feature.properties.migrationpolicies) })
                 }
 
                 // entities.push({ name: name, children: children })
@@ -95,19 +105,26 @@ export default class CesiumViewer extends PureComponent {
                         <Entity
                             key={i}
                             name={entity.country}
-                            //onMouseEnter={ () => this.action( entity.country,  "Mouse Enter")}
-                            //onMouseLeave={ () => this.action(entity.country,"Mouse Leave")}
-                            onMouseDown={() => this.action(entity.country, entity.popupText)}
+                        //onMouseEnter={ () => this.action( entity.country,  "Mouse Enter")}
+                        //onMouseLeave={ () => this.action(entity.country,"Mouse Leave")}
+                        //onMouseDown={() => this.action(entity.country, entity.popupText)}
 
                         >
+
+
                             <EntityDescription
                                 resizeInfoBox={true}
                             >
-
-                                {entity.popupText}
-
+                                {this.hasActivePolicyInPeriod(entity.properties.migrationpolicies) ?
+                                    this.getPolicyText(entity.properties.migrationpolicies)
+                                    :
+                                    <Fragment> No policy in current period.</Fragment>
+                                }
 
                             </EntityDescription>
+
+
+
                             <PolygonGraphics
 
                                 hierarchy={entity.geometry}
@@ -121,8 +138,8 @@ export default class CesiumViewer extends PureComponent {
                             />
 
 
-                          
-                       
+
+
                         </Entity>
                 )}
 
@@ -151,14 +168,14 @@ export default class CesiumViewer extends PureComponent {
 
 
     getColor = (propers) => {
-        const HIGHLIGHT_WITH_POLICY = Cesium.Color.ORANGE.withAlpha(0.7)
-        const HIGHLIGHT_NO_POLICY = Cesium.Color.ORANGE.withAlpha(0.4)
-        const ACTIVE_POLICY_ESTABLISHED_IN_PERIOD = Cesium.Color.AQUA.withAlpha(0.7)
-        const ACTIVE_HISTORICAL_POLICY = Cesium.Color.AQUA.withAlpha(0.4)
+        const HIGHLIGHT_WITH_POLICY = Color.ORANGE.withAlpha(0.7)
+        const HIGHLIGHT_NO_POLICY = Color.ORANGE.withAlpha(0.4)
+        const ACTIVE_POLICY_ESTABLISHED_IN_PERIOD = Color.AQUA.withAlpha(0.7)
+        const ACTIVE_HISTORICAL_POLICY = Color.AQUA.withAlpha(0.4)
 
-        const ANIMATION_HIGHLIGHT_COLOR = Cesium.Color.AQUAMARINE.withAlpha(0.7)
+        const ANIMATION_HIGHLIGHT_COLOR = Color.AQUAMARINE.withAlpha(0.7)
 
-        const NOPOLICY = Cesium.Color.TRANSPARENT
+        const NOPOLICY = Color.TRANSPARENT
         //    console.log(this.props.highlightCountries)
         if (propers.migrationpolicies) {
             /*     if (this.props.animationHighlightCountry.name !== undefined && animationHighlightCountry.name === this.getPropertyComparator(propers, this.props.animationHighlightCountry.type)) {  //animation
@@ -183,10 +200,12 @@ export default class CesiumViewer extends PureComponent {
             for (let i = 0; i < policies.length; i++) {
                 let startPolicy = policies[i]["Year of establishment"]
                 let endPolicy = policies[i]["Year of disestablishment"]
-
+                if(propers.name==="Afghanistan"){
+                    console.log(policies)
+                }
                 if (startPolicy !== "Nil" && startPolicy !== undefined && endPolicy !== undefined) {
 
-                    if ((parseInt(startPolicy.substr(0, 4)) <= this.props.maxYear) && ((endPolicy === "Nil") || (parseInt(endPolicy.substr(0, 4)) > this.props.minYear))) {
+                    if ((parseInt(startPolicy.substr(0, 4)) <= this.props.maxYear) && ((endPolicy === "Nil") || (parseInt(endPolicy.substr(0, 4)) >= this.props.minYear))) {
                         //             console.log("has active Policy")
                         if (parseInt(startPolicy.substr(0, 4)) < this.props.minYear) {
                             //      console.log("hhistorical policy")
@@ -195,10 +214,6 @@ export default class CesiumViewer extends PureComponent {
                             //        console.log("established in period")
                             return ACTIVE_POLICY_ESTABLISHED_IN_PERIOD
                         }
-                    } else {
-                        //no active policy
-                        //      console.log("no policy")
-                        return NOPOLICY
                     }
                 }
             }
@@ -227,26 +242,27 @@ export default class CesiumViewer extends PureComponent {
         }
         return false
     }
-    getPolicyText = (policies, minYear, maxYear) => {
-        //   console.log(policies)
+    getPolicyText = (policies) => {
+          // console.log(policies)
         if (policies) {
+            let infoBoxContent = []
             for (let i = 0; i < policies.length; i++) {
                 let start = policies[i]["Year of establishment"]
                 let end = policies[i]["Year of disestablishment"]
                 if (start !== "Nil" && start !== undefined && end !== undefined) {
-                    // if ((parseInt(start.substr(0, 4)) <= maxYear) && ((end === "Nil") || (parseInt(end.substr(0, 4)) > minYear))) {
-                   return <Fragment>
-                        <h3>Institution Name:  </h3> {policies[i]["Institution name"]} <br /> 
-                        <h3>Institution Overview:  </h3>  {policies[i]["Institution Overview"]} <br />
-                        <h3> Year of establishment: </h3> {policies[i]["Year of establishment"]}<br />
-                        <h3> Year of disestablishment: </h3> {policies[i]["Year of disestablishment"]}<br />
-                    </Fragment>
+                    if ((parseInt(start.substr(0, 4)) <= this.props.maxYear) && ((end === "Nil") || (parseInt(end.substr(0, 4)) > this.props.minYear))) {
+                    
+                    let element = <Fragment key={i}><h3>Institution Name:  </h3> {policies[i]["Institution name"]} <br /> <h4> {policies[i]["Year of establishment"]} -{policies[i]["Year of disestablishment"]}</h4> <h4>Institution Overview:  </h4>  {policies[i]["Institution Overview"]} </Fragment>
+                  //  console.log(element)
+                    infoBoxContent.push(element)
 
-                    // }
+                    }
                 }
-            }
-        }
 
+            }
+            //console.log(infoBoxContent)
+            return infoBoxContent
+        }
         return <Fragment> No active Policy in this period. </Fragment>
     }
 }

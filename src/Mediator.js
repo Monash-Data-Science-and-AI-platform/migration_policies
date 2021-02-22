@@ -238,13 +238,13 @@ const NavMenuItem = ({ id, name, chapter, activeId }) => (
 const Legend = ({ }) => {
     return <div className="legend">
         <div className="legendItem">
-            <div className="legendLabel">Highlight</div><div className="legendColor" style={{ backgroundColor: "blue"}} />
+            <div className="legendLabel">Highlight</div><div className="legendColor" style={{ backgroundColor: "orange"}} />
         </div>
         <div className="legendItem">
-            <div className="legendLabel">Established during period</div><div className="legendColor" style={{ backgroundColor:  "blue"}} />
+            <div className="legendLabel">Established during period</div><div className="legendColor" style={{ backgroundColor:  "rgba(0,255,255,0.8)"}} />
         </div>
         <div className="legendItem">
-            <div className="legendLabel">Established before period</div><div className="legendColor" style={{ backgroundColor: "blue"}} />
+            <div className="legendLabel">Established before period</div><div className="legendColor" style={{ backgroundColor: "rgba(0,255,255,0.4)"}} />
         </div>
     </div>
 }

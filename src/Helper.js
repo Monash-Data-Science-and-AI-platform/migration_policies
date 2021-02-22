@@ -1,5 +1,3 @@
-import {Color}  from 'cesium'
-
 
 
 const countries =  {
@@ -29,7 +27,6 @@ const countries =  {
        "Cuba":{"lat":21.5218,"lon":- 77.7812},
        "Africa":{"lat":6.6111,"lon":20.9394},
        "South America":{"lat":-15.6280,"lon":-52.7226},
-       "Europe": { "lat": 51.1657, "lon": 10.4515},
         "Central Asia": {"lat": 41.3775, "lon": 64.5853}
 }
 export function getCountryLocations(){

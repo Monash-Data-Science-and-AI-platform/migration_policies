@@ -1,24 +1,30 @@
 {
-  "name": "test",
+  "homepage": "http://Monash-Data-Science-and-AI-platform.github.io/migration_policies",
+  "name": "migrationpolicies",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "dependencies": {
-    "@craco/craco": "^5.7.0",
+    "@craco/craco": "^5.9.0",
     "@hot-loader/react-dom": "^17.0.0-rc.2",
+    "@researchgate/react-intersection-observer": "^1.3.5",
     "cesium": "^1.73.0",
     "craco-cesium": "^1.2.0",
     "craco-plugin-react-hot-reload": "^0.1.0",
     "react": "^16.13.1",
     "react-dom": "16.13.1",
     "react-hot-loader": "^4.13.0",
+    "react-html-parser": "^2.0.2",
     "react-scripts": "3.4.3",
+    "react-scroll-into-view": "^1.8.2",
     "resium": "1.13.1"
   },
   "scripts": {
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -34,5 +40,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^2.2.0"
   }
 }

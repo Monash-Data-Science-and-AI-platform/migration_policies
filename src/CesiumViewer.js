@@ -136,12 +136,7 @@ export default class CesiumViewer extends PureComponent {
                                 outline={true}
                                 height={0}
 
-
                             />
-
-
-
-
                         </Entity>
                 )}
 
@@ -199,24 +194,31 @@ export default class CesiumViewer extends PureComponent {
 
             }
             let policies = propers.migrationpolicies
+            let activeInPeriod = false
+            let active = false
             for (let i = 0; i < policies.length; i++) {
                 let startPolicy = policies[i]["Year of establishment"]
                 let endPolicy = policies[i]["Year of disestablishment"]
-            
+                
                 if (startPolicy !== "Nil" && startPolicy !== undefined && endPolicy !== undefined) {
-
+                    active = true;
                     if ((parseInt(startPolicy.substr(0, 4)) <= this.props.maxYear) && ((endPolicy === "Nil") || (parseInt(endPolicy.substr(0, 4)) >= this.props.minYear))) {
                         //             console.log("has active Policy")
-                        if (parseInt(startPolicy.substr(0, 4)) < this.props.minYear) {
+                        if (parseInt(startPolicy.substr(0, 4)) > this.props.minYear) {
                             //      console.log("hhistorical policy")
-                            return ACTIVE_HISTORICAL_POLICY  //active policy established before the period
-                        } else {
-                            //        console.log("established in period")
-                            return ACTIVE_POLICY_ESTABLISHED_IN_PERIOD
-                        }
+                            activeInPeriod = true;
+                       
+                        } 
+                        
                     }
+                    
                 }
             }
+            if(activeInPeriod)
+                return ACTIVE_POLICY_ESTABLISHED_IN_PERIOD
+            
+            if(active)
+                return ACTIVE_HISTORICAL_POLICY
             //    console.log("no policy")
         }
 

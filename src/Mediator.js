@@ -126,6 +126,7 @@ export default class Mediator extends Component {
 
 
     panToCountry = (country) => {
+        this.animating=false;
         if (country !== undefined && country !== null) {
             console.log("should pan to country: " + country)
 
@@ -143,6 +144,7 @@ export default class Mediator extends Component {
         }
     }
 
+    animating = false
     animationIndex = 0
     highlightCountries = []
     highlightObjects(objects) {
@@ -155,6 +157,7 @@ export default class Mediator extends Component {
     doChapterAnimation(objects) {
         console.log("chapterAnimation")
         this.highlightCountries = objects
+        this.animating=true
         this.doAnimation();
     }
 
@@ -167,8 +170,9 @@ export default class Mediator extends Component {
      
 
           
-             if(this.animationIndex <   this.highlightCountries.length){
+             if(this.animationIndex <   this.highlightCountries.length && this.animating){
                 console.log( "animate: " +  this.highlightCountries[this.animationIndex].name)
+       
                 this.setState({
                     pointOfView: [helper.getLocation(  this.highlightCountries[this.animationIndex].name).lat, helper.getLocation(  this.highlightCountries[this.animationIndex].name).lon],
                     speed: 0.4,
@@ -177,6 +181,9 @@ export default class Mediator extends Component {
             //    await this.sleep(2500)
         
             }else {
+                if(!this.animating){
+                    console.log("Animation interrupted")
+                }
                 this.setState({
                     pointOfView: "",
                     speed:3 ,

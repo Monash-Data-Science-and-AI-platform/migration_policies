@@ -25,9 +25,7 @@ export default class CesiumViewer extends PureComponent {
 
     }
 
-    compnentDidUpdate() {
-        console.log("...")
-    }
+
     initialize(countries) {
 
         let entities = []
@@ -86,7 +84,7 @@ export default class CesiumViewer extends PureComponent {
                 fullscreenButton={false}
                 vrButton={false}
                 animation={false}
-                scene3DOnly={true}
+                
                 baseLayerPicker={true}
 
             >
@@ -94,11 +92,15 @@ export default class CesiumViewer extends PureComponent {
                     <CameraFlyTo
                         destination={Cartesian3.fromDegrees(this.props.pointOfView[1], this.props.pointOfView[0], this.viewer.cesiumElement.scene.camera.positionCartographic.height)}
 
-                        duration={3}
+                        duration={this.props.speed}
+                        onComplete={() => this.props.flightComplete()}
                     />
                     :
                     ""
                 }
+
+              
+                
                 {this.state.entities.map(
                     (entity, i) =>
 
@@ -173,15 +175,15 @@ export default class CesiumViewer extends PureComponent {
         const ACTIVE_POLICY_ESTABLISHED_IN_PERIOD = Color.AQUA.withAlpha(0.7)
         const ACTIVE_HISTORICAL_POLICY = Color.AQUA.withAlpha(0.4)
 
-        const ANIMATION_HIGHLIGHT_COLOR = Color.AQUAMARINE.withAlpha(0.7)
+        const ANIMATION_HIGHLIGHT_COLOR = Color.YELLOW.withAlpha(1)
 
         const NOPOLICY = Color.TRANSPARENT
         //    console.log(this.props.highlightCountries)
         if (propers.migrationpolicies) {
-            /*     if (this.props.animationHighlightCountry.name !== undefined && animationHighlightCountry.name === this.getPropertyComparator(propers, this.props.animationHighlightCountry.type)) {  //animation
-                      return helper.ANIMATION_HIGHLIGHT_COLOR
+                 if (this.props.animationHighlightCountry.name !== undefined && this.props.animationHighlightCountry.name === this.getPropertyComparator(propers, this.props.animationHighlightCountry.type)) {  //animation
+                      return ANIMATION_HIGHLIGHT_COLOR
                   }
-      */
+      
             for (let i = 0; i < this.props.highlightCountries.length; i++) {
                 if (this.props.highlightCountries[i].name === this.getPropertyComparator(propers, this.props.highlightCountries[i].type)) {
                     //is country in the list of highlighted countries?
@@ -200,9 +202,7 @@ export default class CesiumViewer extends PureComponent {
             for (let i = 0; i < policies.length; i++) {
                 let startPolicy = policies[i]["Year of establishment"]
                 let endPolicy = policies[i]["Year of disestablishment"]
-                if(propers.name==="Afghanistan"){
-                    console.log(policies)
-                }
+            
                 if (startPolicy !== "Nil" && startPolicy !== undefined && endPolicy !== undefined) {
 
                     if ((parseInt(startPolicy.substr(0, 4)) <= this.props.maxYear) && ((endPolicy === "Nil") || (parseInt(endPolicy.substr(0, 4)) >= this.props.minYear))) {

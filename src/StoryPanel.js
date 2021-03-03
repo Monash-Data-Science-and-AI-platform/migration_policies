@@ -94,9 +94,7 @@ class StoryParagraph extends Component {
     if (this.state.visible) {
       let topOffset = ReactDOM.findDOMNode(this).getBoundingClientRect().top
       let bottomOffset = ReactDOM.findDOMNode(this).getBoundingClientRect().bottom
-      //console.log(this.props.id + " __ " + topOffset + " __ " + bottomOffset)
-      //console.log(this.props.height)
-
+     
       //determine if the current paragraph should be highlighted. It should be highlighted if its beginning is visible on the main area of the page, OR, if the beginning is not visible, the bottom part of the paragraph
       //is still the main object in the current view, which applies to long paragraphs.
       //the border case of very very short paragraphs is prevented by adding an extra empty margin to the bottom of each paragraph, this could be a TODO to refine later if this is in any manner bad for the application.

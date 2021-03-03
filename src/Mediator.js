@@ -4,14 +4,16 @@ import StoryPanel from './StoryPanel.js'
 import sectiondata from './data/sections.json'
 import ScrollIntoView from 'react-scroll-into-view'
 import * as helper from './Helper.js'
-import CesiumViewer from './CesiumViewer.js' 
-import {Cartesian3} from 'cesium'
+import CesiumViewer from './CesiumViewer.js'
+import { Cartesian3 } from 'cesium'
 
-export default  class Mediator extends Component {
+export default class Mediator extends Component {
     updateDimensions = () => {
         this.setState({ width: window.innerWidth, height: window.innerHeight, panelHeight: window.innerHeight - 100 });
 
     };
+
+
     state = {
         sections: [],
         width: 0,
@@ -23,16 +25,16 @@ export default  class Mediator extends Component {
         minYear: 1945,
         maxYear: 2020,
         pointOfView: null,
-        autoRotate: true,
-        highlightCountries: []
+        highlightCountries: [],
+        animationHighlightCountry: ""
 
     }
-    panelChanged = false
+ 
     // m_mapFunctions = null
     //"Facility Name", "Status", "Region", "Technology", "Generator Capacity (MW)", "Latitude", "Longitude"
 
 
-   componentDidMount = function () {
+    componentDidMount = function () {
         window.addEventListener('resize', this.updateDimensions);
         this.updateDimensions()
         let i
@@ -47,7 +49,7 @@ export default  class Mediator extends Component {
         })
 
 
-       
+
         //  console.log(sectiondata.sections)
 
     }
@@ -128,18 +130,21 @@ export default  class Mediator extends Component {
             console.log("should pan to country: " + country)
 
             this.setState({
-                pointOfView: [helper.getLocation(country).lat,  helper.getLocation(country).lon],
-                autoRotate: false,
+                pointOfView: [helper.getLocation(country).lat, helper.getLocation(country).lon],
+
                 animation: false
             })
         } else {
             this.setState({
                 pointOfView: null,
-                autoRotate: true
+
 
             })
         }
     }
+
+    animationIndex = 0
+    highlightCountries = []
     highlightObjects(objects) {
         //highlight countries on the globe
         this.setState({
@@ -149,19 +154,52 @@ export default  class Mediator extends Component {
 
     doChapterAnimation(objects) {
         console.log("chapterAnimation")
-        this.setState({
-            animation: true,
-            highlightCountries: objects
-        })
+        this.highlightCountries = objects
+        this.doAnimation();
     }
 
+    
+    sleep = ms => {
+        return new Promise(resolve => setTimeout(resolve, ms))
+    }
+ 
+    doAnimation = () =>{
+     
+
+          
+             if(this.animationIndex <   this.highlightCountries.length){
+                console.log( "animate: " +  this.highlightCountries[this.animationIndex].name)
+                this.setState({
+                    pointOfView: [helper.getLocation(  this.highlightCountries[this.animationIndex].name).lat, helper.getLocation(  this.highlightCountries[this.animationIndex].name).lon],
+                    speed: 0.4,
+                    animationHighlightCountry:   this.highlightCountries[this.animationIndex]
+                })
+            //    await this.sleep(2500)
+        
+            }else {
+                this.setState({
+                    pointOfView: "",
+                    speed:3 ,
+                    animationHighlightCountry: ""
+                })
+                this.animationIndex = 0
+                this.highlightCountries = []
+            }
+
+
+    }
+    flightComplete = () => {
+        console.log("Flight Complete")
+        this.animationIndex++
+        this.doAnimation()
+    }
     stopAnimation = () => {
         this.setState({
             animation: false
         })
     }
     updateYears(min, max) {
-            console.log("update years: " + min + "   " + max)
+        console.log("update years: " + min + "   " + max)
         this.setState({
             minYear: min,
             maxYear: max
@@ -176,46 +214,48 @@ export default  class Mediator extends Component {
         return (
             <div className="MainContainer">
 
-                    <div className="navbar" id="yearNav">
-                        {this.state.sections.map(
-                            (section, i) =>
-                                <NavMenuItem
-                                    key={i}
-                                    id={i}
-                                    chapter={section.chapter}
-                                    name={section.title}
-                                    activeId={this.state.activeId}
-                                />
-                        )}
-                    </div>
-                    <div className="Panels topDistance" style={{ height: this.state.panelHeight }}>
+                <div className="navbar" id="yearNav">
+                    {this.state.sections.map(
+                        (section, i) =>
+                            <NavMenuItem
+                                key={i}
+                                id={i}
+                                chapter={section.chapter}
+                                name={section.title}
+                                activeId={this.state.activeId}
+                            />
+                    )}
+                </div>
+                <div className="Panels topDistance" style={{ height: this.state.panelHeight }}>
 
-                        {this.state.sections.map(
-                            (section, i) =>
+                    {this.state.sections.map(
+                        (section, i) =>
 
-                                <StoryPanel
-                                    key={i}
-                                    id={i}
-                                    app={this}
-                                    activeID={this.state.activeId} //the Storypanels figure out if they are the active panel and display accordingly
-                                    title={section.title}
-                                    chapter={section.chapter}
-                                    paragraphs={section.renderparagraphs}
-                                    period={section.period}
-                                    height={this.state.height}
-                                />
-                        )}
-                    </div>
-    
-                     <CesiumViewer  
-                    height={this.state.height} 
-                    minYear={this.state.minYear} 
+                            <StoryPanel
+                                key={i}
+                                id={i}
+                                app={this}
+                                activeID={this.state.activeId} //the Storypanels figure out if they are the active panel and display accordingly
+                                title={section.title}
+                                chapter={section.chapter}
+                                paragraphs={section.renderparagraphs}
+                                period={section.period}
+                                height={this.state.height}
+                            />
+                    )}
+                </div>
+
+                <CesiumViewer
+                    height={this.state.height}
+                    minYear={this.state.minYear}
                     maxYear={this.state.maxYear}
-                    highlightCountries= {this.state.highlightCountries}
-                    pointOfView = {this.state.pointOfView}
-                    />
-                    
-                    <Legend />
+                    highlightCountries={this.state.highlightCountries}
+                    pointOfView={this.state.pointOfView}
+                    animationHighlightCountry={this.state.animationHighlightCountry}
+                    flightComplete = {this.flightComplete}
+                />
+
+                <Legend />
 
             </div>
         );
@@ -238,13 +278,13 @@ const NavMenuItem = ({ id, name, chapter, activeId }) => (
 const Legend = ({ }) => {
     return <div className="legend">
         <div className="legendItem">
-            <div className="legendLabel">Highlight</div><div className="legendColor" style={{ backgroundColor: "orange"}} />
+            <div className="legendLabel">Highlight</div><div className="legendColor" style={{ backgroundColor: "orange" }} />
         </div>
         <div className="legendItem">
-            <div className="legendLabel">Established during period</div><div className="legendColor" style={{ backgroundColor:  "rgba(0,255,255,0.8)"}} />
+            <div className="legendLabel">Established during period</div><div className="legendColor" style={{ backgroundColor: "rgba(0,255,255,0.8)" }} />
         </div>
         <div className="legendItem">
-            <div className="legendLabel">Established before period</div><div className="legendColor" style={{ backgroundColor: "rgba(0,255,255,0.4)"}} />
+            <div className="legendLabel">Established before period</div><div className="legendColor" style={{ backgroundColor: "rgba(0,255,255,0.4)" }} />
         </div>
     </div>
 }

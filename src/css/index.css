@@ -6,8 +6,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-y: scroll;
-    background-color: white;
-  
+    background:rgba(38, 38, 38, 0.95);
+  color: #edffff;
 }
 
 
@@ -49,12 +49,11 @@ code {
 .storyPanelSection{
   min-height:1000px;
   padding-left:10px;
-  border-bottom: 2px solid darkgrey;
-  
+
 }
 
 .activePanel{
-  color: black;
+  color: #edffff;
 }
 
 .inactivePanel{
@@ -70,8 +69,9 @@ code {
   margin: auto;
   z-index: 1000;
   height:45px;
-  background: white;
-  margin-lefT: 14px;
+  background: rgba(84, 84, 84, 1);
+  color: #edffff;
+  padding-left: 14px;
 }
 
 
@@ -84,7 +84,7 @@ code {
   text-decoration: none;
   line-height:35px;
   margin-right:20px;
-  margin-top:2px;
+  margin-top:3px;
   min-width: 50px;
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
@@ -106,9 +106,7 @@ code {
   color: white;
   background-color: darkgrey;
   border: 1.5px solid grey;
-  -moz-box-shadow:    3px 2px 0px 0px grey;
-  -webkit-box-shadow: 3px 2px 0px 0px grey;
-  box-shadow:         3px 2px 0px 0px grey;
+
 
 }
 
@@ -116,10 +114,10 @@ code {
 .legend {
   position: fixed;
   z-index: 1000;
-  margin-top: 45px;
+  margin-top: 46px;
   font-size: smaller;
-  background-color: white;
-  color: black;
+ 
+  color: #edffff;
   display:flex;
   justify-content: space-around;
   width: 50%;
@@ -165,7 +163,7 @@ code {
 
 
 .active {
-  color:black;
+  color: #ebffff;
   opacity: 1 !important;
 }
 
@@ -204,9 +202,7 @@ code {
   text-align:center;
   background-color: darkgrey;
   border: 1.5px solid grey;
-  -moz-box-shadow:    3px 2px 0px 0px grey;
-  -webkit-box-shadow: 3px 2px 0px 0px grey;
-  box-shadow:         3px 2px 0px 0px grey;
+ 
   color:white;
   z-index:10000;
   text-align: center;
